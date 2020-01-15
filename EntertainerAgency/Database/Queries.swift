@@ -13,10 +13,35 @@ import SQLite3
 extension Database{
    
     
-    func getTopRatedUsers()->[String:Double]{
-        var topRatedUsers = [String:Double]()
+    func getTopRatedUsers()->[TopRatedUsers]{
         
+        var topRatedUsers = [TopRatedUsers]()
+         var queryStatement: OpaquePointer? = nil
         
+         let queryStatementString = "SELECT ID, EmployeeName, EmployeeSurname, Rating, 'Employee' AS Type FROM Employee UNION SELECT ID, EmployerName, EmployerSurname, Rating, 'Employer' FROM Employer ORDER BY Rating DESC, ID ASC LIMIT 10;"
+        
+           if sqlite3_prepare_v2(db, queryStatementString, -1, &queryStatement, nil) == SQLITE_OK {
+
+           while (sqlite3_step(queryStatement) == SQLITE_ROW) {
+             let nameCString =  sqlite3_column_text(queryStatement, 1)
+             let name = String(cString: nameCString!)
+             let surnameCString = sqlite3_column_text(queryStatement, 2)
+             let surname = String(cString: surnameCString!)
+             let rating = sqlite3_column_double(queryStatement, 3)
+             let typeCString = sqlite3_column_text(queryStatement, 4)
+             let type = String(cString: typeCString!)
+            
+            let topUser = TopRatedUsers(name: name, surname: surname, type: type, rating: rating)
+            print(topUser.name + " " + topUser.type +  " " + "\(rating)")
+            topRatedUsers.append(topUser)
+              
+           }
+
+         } else {
+           print("SELECT statement could not be prepared")
+         }
+                 
+        sqlite3_finalize(queryStatement)
         
         return topRatedUsers
     }
@@ -62,10 +87,8 @@ extension Database{
           } else {
               print("SELECT statement could not be prepared")
           }
-          sqlite3_finalize(queryStatement)
-        
-        
-        
+        sqlite3_finalize(queryStatement)
+     
         return eventsInfo
     }
     
@@ -99,6 +122,10 @@ extension Database{
         
         
         return eventsInfo
+    }
+    
+    func getRecommendedEmployee(){
+        
     }
     
     
@@ -135,7 +162,6 @@ extension Database{
     func selectUser(){
         
         
-        
     }
     
     func itExistsLocation(country: String, city: String, state: String, streetAdress: String, zipCode:  Int)->Int{
@@ -162,15 +188,37 @@ extension Database{
     }
     
     func getAvailableEmployees(eventID: Int)->[String]{
-        
+        print("getAv")
+        print()
         var queryStatement: OpaquePointer? = nil
-           let queryStatementString = ""
+        let queryStatementString =
+        """
+
+            SELECT A.City, A.EmployeeName FROM
+            ((SELECT City,EmployeeName
+            FROM Employee INNER JOIN Location ON Employee.LocationID = Location.ID ) AS A
+            INNER JOIN
+            (SELECT City
+            FROM Events INNER JOIN Location ON Events.LocationID = Location.ID ) AS B
+            ON A.City = B.city)  ;
+          
+
+"""
            var employees = [String]()
                      if sqlite3_prepare_v2(db, queryStatementString, -1, &queryStatement, nil) == SQLITE_OK {
 
                      while (sqlite3_step(queryStatement) == SQLITE_ROW) {
-                        sqlite3_column_int(queryStatement, 0)
-                        employees.append("elem")
+                       var employeeCString = sqlite3_column_text(queryStatement, 0)
+                        var employeeName = String(cString: employeeCString!)
+                        
+                        
+                        var employee2CString = sqlite3_column_text(queryStatement, 1)
+                        var employee2Name = String(cString: employee2CString!)
+                        
+                        var employee3CString = sqlite3_column_text(queryStatement, 0)
+                        var employee3Name = String(cString: employee3CString!)
+                        
+                              print( employeeName + " " + employee2Name  + " " + employee3Name   )
                      }
 
                    } else {
@@ -178,7 +226,7 @@ extension Database{
                    }
                    sqlite3_finalize(queryStatement)
         
-        
+        print()
         return employees
         
     }
@@ -187,40 +235,34 @@ extension Database{
     func printEmployee(){
            
            var queryStatement: OpaquePointer? = nil
-           //(Id, EventName,Date,Duration,LocationID)
            let queryStatementString = "SELECT * FROM Link;"
            
-                     if sqlite3_prepare_v2(db, queryStatementString, -1, &queryStatement, nil) == SQLITE_OK {
+             if sqlite3_prepare_v2(db, queryStatementString, -1, &queryStatement, nil) == SQLITE_OK {
 
-                     while (sqlite3_step(queryStatement) == SQLITE_ROW) {
-                        let id = Int(sqlite3_column_int(queryStatement, 0))
-                        
-                        var employeeCString = sqlite3_column_text(queryStatement, 1)
-                        var employeeName = String(cString: employeeCString!)
-                        
-                        
-                        var employee2CString = sqlite3_column_text(queryStatement, 2)
-                        var employee2Name = String(cString: employee2CString!)
-                        
-                        var employee3CString = sqlite3_column_text(queryStatement, 3)
-                        var employee3Name = String(cString: employee3CString!)
-                        
-                        var employee4CString = sqlite3_column_text(queryStatement, 4)
-                        var employee4Name = String(cString: employee4CString!)
-                        
-//                        var employee5CString = sqlite3_column_text(queryStatement, 5)
-//                        var employee5Name = String(cString: employee5CString!)
-                        
-                       //print(employeeName)
-                        //print(id)
-                        print( employeeName + " " + employee2Name  + " " + employee3Name  + " " + employee4Name  )// + " " + employee5Name)
-                        
-                     }
+             while (sqlite3_step(queryStatement) == SQLITE_ROW) {
+                let id = Int(sqlite3_column_int(queryStatement, 0))
+                
+                var employeeCString = sqlite3_column_text(queryStatement, 1)
+                var employeeName = String(cString: employeeCString!)
+                
+                
+                var employee2CString = sqlite3_column_text(queryStatement, 2)
+                var employee2Name = String(cString: employee2CString!)
+                
+                var employee3CString = sqlite3_column_text(queryStatement, 3)
+                var employee3Name = String(cString: employee3CString!)
+                
+                var employee4CString = sqlite3_column_text(queryStatement, 4)
+                var employee4Name = String(cString: employee4CString!)
+               
+                print( employeeName + " " + employee2Name  + " " + employee3Name  + " " + employee4Name  )// + " " + employee5Name)
+                
+             }
 
-                   } else {
-                     print("SELECT statement could not be prepared")
-                   }
-                   sqlite3_finalize(queryStatement)
+           } else {
+             print("SELECT statement could not be prepared")
+           }
+           sqlite3_finalize(queryStatement)
            
            
        }
@@ -259,5 +301,21 @@ class EventInfoObjectForEmployee{
         self.employee.append(employee)
     }
     
+    
+}
+
+class TopRatedUsers{
+    
+    var name: String
+    var surname: String
+    var type: String
+    var rating: Double
+    
+    init(name: String, surname: String, type: String, rating: Double) {
+        self.name = name
+        self.surname = surname
+        self.type = type
+        self.rating = rating
+    }
     
 }

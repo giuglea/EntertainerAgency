@@ -18,7 +18,7 @@ extension Database{
         
         let insertStatementString = "INSERT INTO Events (Id, EventName,Date,Duration,LocationID) VALUES (?, '\(eventName)', '\(duration)', '\(locationID)', '\(date)');"
         var insertStatement:OpaquePointer?=nil
-        
+        //da inapoi sa te omor
            if sqlite3_prepare_v2(db, insertStatementString, -1, &insertStatement, nil)==SQLITE_OK{
            
                if sqlite3_step(insertStatement) == SQLITE_DONE {
@@ -185,7 +185,7 @@ extension Database{
     
     func getID(tableName: String, data: String, tableColumn: String)->Int{//test
         var queryStatement: OpaquePointer? = nil
-               var queryStatementString = "SELECT ID FROM \(tableName) WHERE '\(tableColumn)' = '\(data)';"
+               var queryStatementString = "SELECT ID FROM \(tableName) WHERE \(tableColumn) = '\(data)';"
                var id: Int = 0
                if sqlite3_prepare_v2(db, queryStatementString, -1, &queryStatement, nil) == SQLITE_OK {
 

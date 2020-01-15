@@ -235,6 +235,29 @@ class Database{
         
         
         
+       billID = insertBill(cost: 3600, moneytype: "RON")
+       locationID = insertLocation(country: "Romania", city: "Constanta", state: "Constanta", streetAdress: "Bermude", zipCode: 90540)
+       eventID = insertEvent(eventName: "Festival de Muzica", duration: "3:20", locationID: locationID, date: "09:12:2019")
+       employerID = insertEmployer(employerName: "Cristian", employerSurname: "Mana", gender: "M", rating: 4.1, phoneNumber: 35230789, locationID: locationID)
+        //"INSERT INTO Employee (Id, EmployeeName, EmployeeSurname, Gender, Rating, PhoneNumber, LocationID)
+       //employerID = insertEmployer(employerName: "Mario", employerSurname: "Cool", gender: "M", rating: 4.7, phoneNumber: 7239087, locationID: locationID)
+       employeeID = getID(tableName: "Employee", data: "Laur", tableColumn: "EmployeeName")
+       insertLink(employeeID: employeeID, employerID: employerID, eventID: eventID, billID: billID)
+      
+      
+        billID = insertBill(cost: 2000, moneytype: "RON")
+         locationID = insertLocation(country: "Romania", city: "Constanta", state: "Constanta", streetAdress: "Bermude", zipCode: 90540)
+         eventID = insertEvent(eventName: "Festival de Muzica Editia 3", duration: "3:20", locationID: locationID, date: "09:12:2020")
+         employerID = getID(tableName: "Employer", data: "Cristian", tableColumn: "EmployerName")
+          //"INSERT INTO Employee (Id, EmployeeName, EmployeeSurname, Gender, Rating, PhoneNumber, LocationID)
+         //employerID = insertEmployer(employerName: "Mario", employerSurname: "Cool", gender: "M", rating: 4.7, phoneNumber: 7239087, locationID: locationID)
+         employeeID = getID(tableName: "Employee", data: "Laur", tableColumn: "EmployeeName")
+         insertLink(employeeID: employeeID, employerID: employerID, eventID: eventID, billID: billID)
+        employeeID = getID(tableName: "Employee", data: "Catalin", tableColumn: "EmployeeName")
+        insertLink(employeeID: employeeID, employerID: employerID, eventID: eventID, billID: billID)
+        
+        getTopRatedUsers()
+        getAvailableEmployees(eventID: 2)
         
     }
     
